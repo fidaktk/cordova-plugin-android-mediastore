@@ -61,8 +61,7 @@ public class CordovaAndroidMediaStore extends CordovaPlugin {
         try {
 
             cordova.getThreadPool().execute(new Runnable() {
-                CordovaInterface cordova = _cordova;
-
+                final CordovaInterface cordova = _cordova;
                 @Override
                 public void run() {
                     if (type.equals("picture") || type.equals("photo")) {
@@ -98,8 +97,18 @@ public class CordovaAndroidMediaStore extends CordovaPlugin {
                                 contentValues.put(MediaStore.Images.Media.IS_PENDING, 0);
                                 contentResolver.update(imageUri, contentValues, null, null);
                             } else {
-                                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                                File dir = new File(path + "/" + fileDir);
+                                File path, dir;
+                                if (fileDir.equalsIgnoreCase("DCIM")) {
+                                    path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                                    dir = new File(String.valueOf(path));
+                                } else {
+                                    path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                                    if (fileDir.equalsIgnoreCase("Pictures")) {
+                                        dir = new File(String.valueOf(path));
+                                    } else {
+                                        dir = new File(path + "/" + fileDir);
+                                    }
+                                }
                                 dir.mkdirs();
                                 File file = new File(dir, fileName);
                                 FileOutputStream out = new FileOutputStream(file);
