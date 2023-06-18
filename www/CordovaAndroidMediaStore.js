@@ -1,40 +1,8 @@
-/*global cordova, module*/
+var exec = require('cordova/exec');
 
-module.exports = (function() {
-  function callPromise(name) {
-    return function(...params) {
-      return new Promise((resolve, reject) =>
-        cordova.exec(resolve, reject, 'CordovaAndroidMediaStore', this.name, params)
-      );
-    }.bind({ name });
-  }
-
-  let exports = {};
-
-  [
-    'selectFolder',
-    'selectFile',
-    'openFolder',
-    'openFile',
-    'readFile',
-    'writeFile',
-    'overwriteFile',
-    'saveFile',
-    'deleteFile',
-    'getFileName',
-    'getUri'
-  ].forEach(action => (exports[action] = callPromise(action)));
-
-  exports.store = function(byteString, fileDir, fileName, type) {
-    return new Promise((resolve, reject) =>
-      cordova.exec(resolve, reject, 'CordovaAndroidMediaStore', 'store', [
-        byteString,
-        fileDir,
-        fileName,
-        type
-      ])
-    );
-  };
-
-  return exports;
-})();
+exports.store = function (byteString, fileDir, fileName, type, success, error) {
+    exec(success, error,
+      'CordovaAndroidMediaStore',
+      'store',
+      [byteString, fileDir, fileName, type]);
+};
